@@ -116,14 +116,16 @@ class BlogPostManagementTest extends TestCase
 
     public function test_the_title_must_be_less_than_256_characters_in_length()
     {
-        $this->actingAs($user = User::factory()->create())
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
              ->post('/posts', array_merge(
                  $this->data($user->id),
                  ['title' => Str::random(255)]
              ))
              ->assertSessionHasNoErrors();
 
-        $this->actingAs($user = User::factory()->create())
+        $this->actingAs($user)
              ->post('/posts', array_merge(
                  $this->data($user->id),
                  ['title' => Str::random(256)]
@@ -207,8 +209,6 @@ class BlogPostManagementTest extends TestCase
              ->assertSessionHasErrors('body');
     }
 
-    // @todo the body must be at least 100 characters in length
-    // @todo the body must be less than 50,000 characters in length
     // @todo a logged in user can only create posts for their own
 
     private function data($user = 1)
