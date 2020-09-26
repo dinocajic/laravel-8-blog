@@ -95,7 +95,7 @@ class PostController extends Controller
     private function validateData(Request $request): array
     {
         return $request->validate([
-            'title'   => ['required', 'unique:posts,title', 'min:5'],
+            'title'   => ['required', 'unique:posts,title', 'between:5,255'],
             'excerpt' => 'required',
             'body'    => 'required',
             'user_id' => 'required',

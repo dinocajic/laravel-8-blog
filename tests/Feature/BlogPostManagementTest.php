@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class BlogPostManagementTest extends TestCase
@@ -111,6 +112,23 @@ class BlogPostManagementTest extends TestCase
                  ['title', 'Hello']
              ))
              ->assertSessionHasNoErrors();
+    }
+
+    public function test_the_title_must_be_less_than_256_characters_in_length()
+    {
+        $this->actingAs($user = User::factory()->create())
+             ->post('/posts', array_merge(
+                 $this->data($user->id),
+                 ['title' => Str::random(255)]
+             ))
+             ->assertSessionHasNoErrors();
+
+        $this->actingAs($user = User::factory()->create())
+             ->post('/posts', array_merge(
+                 $this->data($user->id),
+                 ['title' => Str::random(256)]
+             ))
+             ->assertSessionHasErrors('title');
     }
 
     private function data($user = 1)
