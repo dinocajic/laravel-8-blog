@@ -94,6 +94,25 @@ class BlogPostManagementTest extends TestCase
              ->assertSessionHasErrors('title');
     }
 
+    public function test_the_title_must_be_at_least_five_characters_in_length()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+             ->post('/posts', array_merge(
+                 $this->data($user->id),
+                 ['title' => 'Hey']
+             ))
+             ->assertSessionHasErrors('title');
+
+        $this->actingAs($user)
+             ->post('/posts', array_merge(
+                 $this->data($user->id),
+                 ['title', 'Hello']
+             ))
+             ->assertSessionHasNoErrors();
+    }
+
     private function data($user = 1)
     {
         return [
