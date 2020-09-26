@@ -169,6 +169,44 @@ class BlogPostManagementTest extends TestCase
              ->assertSessionHasErrors('excerpt');
     }
 
+    public function test_the_body_must_be_at_least_100_characters_in_length()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+             ->post('/posts', array_merge(
+                 $this->data($user->id),
+                 ['body' => Str::random(100)]
+             ))
+             ->assertSessionHasNoErrors();
+
+        $this->actingAs($user)
+             ->post('/posts', array_merge(
+                 $this->data($user->id),
+                 ['body' => Str::random(99)]
+             ))
+             ->assertSessionHasErrors('body');
+    }
+
+    public function test_the_body_must_be_less_then_50000_characters_in_length()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+             ->post('/posts', array_merge(
+                 $this->data($user->id),
+                 ['body' => Str::random(50000)]
+             ))
+             ->assertSessionHasNoErrors();
+
+        $this->actingAs($user)
+             ->post('/posts', array_merge(
+                 $this->data($user->id),
+                 ['body' => Str::random(50001)]
+             ))
+             ->assertSessionHasErrors('body');
+    }
+
     // @todo the body must be at least 100 characters in length
     // @todo the body must be less than 50,000 characters in length
     // @todo a logged in user can only create posts for their own
