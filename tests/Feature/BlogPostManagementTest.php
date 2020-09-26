@@ -27,7 +27,7 @@ class BlogPostManagementTest extends TestCase
              ->assertRedirect('/login');
     }
 
-    public function test_the_title_is_required()
+    public function test_the_post_title_is_required()
     {
         $response = $this->actingAs($user = User::factory()->create())
             ->post('/posts', array_merge(
@@ -36,6 +36,43 @@ class BlogPostManagementTest extends TestCase
             ));
 
         $response->assertSessionHasErrors('title');
+        $this->assertCount(0, Post::all());
+    }
+
+    public function test_the_post_excerpt_is_required()
+    {
+        $response = $this->actingAs($user = User::factory()->create())
+            ->post('/posts', array_merge(
+                $this->data($user->id),
+                ['excerpt' => '']
+            ));
+
+        $response->assertSessionHasErrors('excerpt');
+        $this->assertCount(0, Post::all());
+    }
+
+    public function test_the_post_body_is_required()
+    {
+        $response = $this->actingAs($user = User::factory()->create())
+            ->post('/posts', array_merge(
+                $this->data($user->id),
+                ['body' => '']
+            ));
+
+        $response->assertSessionHasErrors('body');
+        $this->assertCount(0, Post::all());
+    }
+
+    public function test_the_post_user_id_is_required()
+    {
+        $response = $this->actingAs($user = User::factory()->create())
+            ->post('/posts', array_merge(
+                $this->data($user->id),
+                ['user_id' => '']
+            ));
+
+        $response->assertSessionHasErrors('user_id');
+        $this->assertCount(0, Post::all());
     }
 
     private function data($user = 1)

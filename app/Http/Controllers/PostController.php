@@ -95,10 +95,10 @@ class PostController extends Controller
     private function validateData(Request $request): array
     {
         return $request->validate([
-            'title' => 'required',
-            'excerpt' => '',
-            'body' => '',
-            'user_id' => '',
+            'title'   => 'required',
+            'excerpt' => 'required',
+            'body'    => 'required',
+            'user_id' => 'required',
         ]);
     }
 }
