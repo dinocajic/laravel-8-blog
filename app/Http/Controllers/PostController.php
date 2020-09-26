@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class PostController extends Controller
 {
@@ -40,7 +41,10 @@ class PostController extends Controller
      */
     public function store(Request $request)
     {
-        Post::create( $this->validateData($request) );
+        Post::create(array_merge(
+            $this->validateData($request),
+            ['user_id' => Auth::id()]
+        ));
     }
 
     /**
@@ -98,7 +102,6 @@ class PostController extends Controller
             'title'   => ['required', 'unique:posts,title', 'between:5,255'],
             'excerpt' => ['required', 'between:100,500'],
             'body'    => ['required', 'between:100,50000'],
-            'user_id' => 'required',
         ]);
     }
 }

@@ -17,7 +17,7 @@ class BlogPostManagementTest extends TestCase
     public function test_a_blog_post_can_be_created_by_authenticated_user_only()
     {
         $response = $this->actingAs($user = User::factory()->create())
-             ->post('/posts', $this->data($user->id));
+             ->post('/posts', $this->data());
 
         $this->assertCount(1, Post::all());
         $response->assertOk();
@@ -32,7 +32,7 @@ class BlogPostManagementTest extends TestCase
     {
         $response = $this->actingAs($user = User::factory()->create())
             ->post('/posts', array_merge(
-                $this->data($user->id),
+                $this->data(),
                 ['title' => '']
             ));
 
@@ -44,7 +44,7 @@ class BlogPostManagementTest extends TestCase
     {
         $response = $this->actingAs($user = User::factory()->create())
             ->post('/posts', array_merge(
-                $this->data($user->id),
+                $this->data(),
                 ['excerpt' => '']
             ));
 
@@ -56,23 +56,11 @@ class BlogPostManagementTest extends TestCase
     {
         $response = $this->actingAs($user = User::factory()->create())
             ->post('/posts', array_merge(
-                $this->data($user->id),
+                $this->data(),
                 ['body' => '']
             ));
 
         $response->assertSessionHasErrors('body');
-        $this->assertCount(0, Post::all());
-    }
-
-    public function test_the_post_user_id_is_required()
-    {
-        $response = $this->actingAs($user = User::factory()->create())
-            ->post('/posts', array_merge(
-                $this->data($user->id),
-                ['user_id' => '']
-            ));
-
-        $response->assertSessionHasErrors('user_id');
         $this->assertCount(0, Post::all());
     }
 
@@ -82,14 +70,14 @@ class BlogPostManagementTest extends TestCase
 
         $this->actingAs($user)
              ->post('/posts', array_merge(
-                 $this->data($user->id),
+                 $this->data(),
                  ['title' => 'Not a unique title']
              ))
              ->assertOk();
 
         $this->actingAs($user)
              ->post('/posts', array_merge(
-                 $this->data($user->id),
+                 $this->data(),
                  ['title' => 'Not a unique title']
              ))
              ->assertSessionHasErrors('title');
@@ -101,14 +89,14 @@ class BlogPostManagementTest extends TestCase
 
         $this->actingAs($user)
              ->post('/posts', array_merge(
-                 $this->data($user->id),
+                 $this->data(),
                  ['title' => 'Hey']
              ))
              ->assertSessionHasErrors('title');
 
         $this->actingAs($user)
              ->post('/posts', array_merge(
-                 $this->data($user->id),
+                 $this->data(),
                  ['title', 'Hello']
              ))
              ->assertSessionHasNoErrors();
@@ -120,14 +108,14 @@ class BlogPostManagementTest extends TestCase
 
         $this->actingAs($user)
              ->post('/posts', array_merge(
-                 $this->data($user->id),
+                 $this->data(),
                  ['title' => Str::random(255)]
              ))
              ->assertSessionHasNoErrors();
 
         $this->actingAs($user)
              ->post('/posts', array_merge(
-                 $this->data($user->id),
+                 $this->data(),
                  ['title' => Str::random(256)]
              ))
              ->assertSessionHasErrors('title');
@@ -139,14 +127,14 @@ class BlogPostManagementTest extends TestCase
 
         $this->actingAs($user)
              ->post('/posts', array_merge(
-                 $this->data($user->id),
+                 $this->data(),
                  ['excerpt' => Str::random(99)]
              ))
              ->assertSessionHasErrors('excerpt');
 
         $this->actingAs($user)
              ->post('/posts', array_merge(
-                 $this->data($user->id),
+                 $this->data(),
                  ['excerpt' => Str::random(100)]
              ))
              ->assertSessionHasNoErrors();
@@ -158,14 +146,14 @@ class BlogPostManagementTest extends TestCase
 
         $this->actingAs($user)
              ->post('/posts', array_merge(
-                 $this->data($user->id),
+                 $this->data(),
                  ['excerpt' => Str::random(500)]
              ))
              ->assertSessionHasNoErrors();
 
         $this->actingAs($user)
              ->post('/posts', array_merge(
-                 $this->data($user->id),
+                 $this->data(),
                  ['excerpt' => Str::random(501)]
              ))
              ->assertSessionHasErrors('excerpt');
@@ -177,14 +165,14 @@ class BlogPostManagementTest extends TestCase
 
         $this->actingAs($user)
              ->post('/posts', array_merge(
-                 $this->data($user->id),
+                 $this->data(),
                  ['body' => Str::random(100)]
              ))
              ->assertSessionHasNoErrors();
 
         $this->actingAs($user)
              ->post('/posts', array_merge(
-                 $this->data($user->id),
+                 $this->data(),
                  ['body' => Str::random(99)]
              ))
              ->assertSessionHasErrors('body');
@@ -196,28 +184,25 @@ class BlogPostManagementTest extends TestCase
 
         $this->actingAs($user)
              ->post('/posts', array_merge(
-                 $this->data($user->id),
+                 $this->data(),
                  ['body' => Str::random(50000)]
              ))
              ->assertSessionHasNoErrors();
 
         $this->actingAs($user)
              ->post('/posts', array_merge(
-                 $this->data($user->id),
+                 $this->data(),
                  ['body' => Str::random(50001)]
              ))
              ->assertSessionHasErrors('body');
     }
 
-    // @todo a logged in user can only create posts for their own
-
-    private function data($user = 1)
+    private function data()
     {
         return [
-            'title' => $this->faker->unique()->sentence,
+            'title' => Str::random(120),
             'excerpt' => Str::random(120),
-            'body' => $this->faker->paragraph,
-            'user_id' => $user,
+            'body' => Str::random(500),
         ];
     }
 }
