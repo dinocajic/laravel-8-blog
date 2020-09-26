@@ -27,6 +27,17 @@ class BlogPostManagementTest extends TestCase
              ->assertRedirect('/login');
     }
 
+    public function test_the_title_is_required()
+    {
+        $response = $this->actingAs($user = User::factory()->create())
+            ->post('/posts', array_merge(
+                $this->data($user->id),
+                ['title' => '']
+            ));
+
+        $response->assertSessionHasErrors('title');
+    }
+
     private function data($user = 1)
     {
         return [
