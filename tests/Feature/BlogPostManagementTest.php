@@ -75,6 +75,25 @@ class BlogPostManagementTest extends TestCase
         $this->assertCount(0, Post::all());
     }
 
+    public function test_the_title_must_be_unique()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+             ->post('/posts', array_merge(
+                 $this->data($user->id),
+                 ['title' => 'Not a unique title']
+             ))
+             ->assertOk();
+
+        $this->actingAs($user)
+             ->post('/posts', array_merge(
+                 $this->data($user->id),
+                 ['title' => 'Not a unique title']
+             ))
+             ->assertSessionHasErrors('title');
+    }
+
     private function data($user = 1)
     {
         return [
