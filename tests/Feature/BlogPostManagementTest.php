@@ -14,6 +14,10 @@ class BlogPostManagementTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
+    /*******************************************************************************************************************
+     * STORE TESTING
+     ******************************************************************************************************************/
+
     public function test_a_blog_post_can_be_created_by_authenticated_user_only()
     {
         $response = $this->actingAs($user = User::factory()->create())
@@ -197,12 +201,47 @@ class BlogPostManagementTest extends TestCase
              ->assertSessionHasErrors('body');
     }
 
+    /*******************************************************************************************************************
+     * EDIT TESTING
+     ******************************************************************************************************************/
+
+    public function test_the_posts_creator_can_edit_the_post()
+    {
+        $user = User::factory()->create();
+        $this->actingAs($user)->post('/posts', $this->data());
+        $post = Post::first();
+
+        $new_random_data = $this->data();
+
+        $this->actingAs($user)
+             ->patch('/posts/' . $post->id, $new_random_data)
+             ->assertOk();
+
+        $this->assertDatabaseHas('posts', $new_random_data);
+    }
+
+    public function test_the_user_cannot_edit_someone_elses_posts()
+    {
+        $this->actingAs(User::factory()->create())
+             ->post('/posts', $this->data());
+
+        $post = Post::first();
+        Auth::logout();
+
+        // Login as someone else and try to edit the post that was added before by another user
+        $new_random_data = $this->data();
+
+        $this->actingAs(User::factory()->create())
+             ->patch('/posts/' . $post->id, $new_random_data)
+             ->assertForbidden();
+    }
+
     private function data()
     {
         return [
-            'title' => Str::random(120),
+            'title'   => Str::random(120),
             'excerpt' => Str::random(120),
-            'body' => Str::random(500),
+            'body'    => Str::random(500),
         ];
     }
 }
