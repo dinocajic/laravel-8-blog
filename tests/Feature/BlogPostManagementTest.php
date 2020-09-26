@@ -131,11 +131,53 @@ class BlogPostManagementTest extends TestCase
              ->assertSessionHasErrors('title');
     }
 
+    public function test_the_excerpt_must_be_at_least_100_characters_in_length()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+             ->post('/posts', array_merge(
+                 $this->data($user->id),
+                 ['excerpt' => Str::random(99)]
+             ))
+             ->assertSessionHasErrors('excerpt');
+
+        $this->actingAs($user)
+             ->post('/posts', array_merge(
+                 $this->data($user->id),
+                 ['excerpt' => Str::random(100)]
+             ))
+             ->assertSessionHasNoErrors();
+    }
+
+    public function test_the_excerpt_must_be_less_then_500_characters_in_length()
+    {
+        $user = User::factory()->create();
+
+        $this->actingAs($user)
+             ->post('/posts', array_merge(
+                 $this->data($user->id),
+                 ['excerpt' => Str::random(500)]
+             ))
+             ->assertSessionHasNoErrors();
+
+        $this->actingAs($user)
+             ->post('/posts', array_merge(
+                 $this->data($user->id),
+                 ['excerpt' => Str::random(501)]
+             ))
+             ->assertSessionHasErrors('excerpt');
+    }
+
+    // @todo the body must be at least 100 characters in length
+    // @todo the body must be less than 50,000 characters in length
+    // @todo a logged in user can only create posts for their own
+
     private function data($user = 1)
     {
         return [
             'title' => $this->faker->unique()->sentence,
-            'excerpt' => $this->faker->sentence,
+            'excerpt' => Str::random(120),
             'body' => $this->faker->paragraph,
             'user_id' => $user,
         ];

@@ -96,7 +96,7 @@ class PostController extends Controller
     {
         return $request->validate([
             'title'   => ['required', 'unique:posts,title', 'between:5,255'],
-            'excerpt' => 'required',
+            'excerpt' => ['required', 'between:100,500'],
             'body'    => 'required',
             'user_id' => 'required',
         ]);
