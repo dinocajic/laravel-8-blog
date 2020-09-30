@@ -14,6 +14,18 @@ class BlogPostManagementTest extends TestCase
 {
     use RefreshDatabase, WithFaker;
 
+    /**
+     * @todo Add belongsTo() User relationship to Post: user()
+     *       Change user() to author() ... belongsTo(User::class, 'user_id')
+     *
+     * @todo Create destroy() testing: DELETE/ posts/{post}
+     * @todo Create index() testing: GET /posts
+     * @todo Create create() testing: GET /posts/create
+     * @todo Create show() testing: GET /posts/{post}
+     * @todo Create edit() testing: GET /posts/{post}/edit
+     *
+     */
+
     /*******************************************************************************************************************
      * STORE TESTING
      ******************************************************************************************************************/
